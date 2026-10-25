@@ -35,6 +35,15 @@ main{width:min(920px,100%);margin:auto;padding:28px 18px 56px}.top{display:flex;
 </main>
 <script>
 (() => {
+const SUPABASE_URL = "https://wdfqlysvpvvcpkamnncr.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "TEMPEL_PUBLISHABLE_KEY_DI_SINI";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+console.log("COSMIC CHAOS: Supabase client siap");
   const $ = id => document.getElementById(id);
   const state = { players: [], code: "", phase: 0, tasks: new Set(), votes: {}, roleIndex: 0 };
   const phases = [
@@ -109,6 +118,6 @@ main{width:min(920px,100%);margin:auto;padding:28px 18px 56px}.top{display:flex;
   $("meetingBtn").addEventListener("click",()=>{state.phase=3;renderPhase();});
   $("resetBtn").addEventListener("click",()=>{hide("game");show("home");state.players=[];state.tasks.clear();});
 })();
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>
