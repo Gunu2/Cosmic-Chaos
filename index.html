@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COSMIC CHAOS</title>
+<style>
+:root{color-scheme:dark;--bg:#10132b;--panel:#1b2042;--line:#343b68;--pink:#ff5ea8;--cyan:#67e8f9;--yellow:#ffe66d;--text:#f7f7ff;--muted:#b6bddf}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at 20% 0%,#30336b 0,transparent 35%),var(--bg);color:var(--text);min-height:100vh}
+main{width:min(920px,100%);margin:auto;padding:28px 18px 56px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.logo{font-size:clamp(1.6rem,5vw,3rem);font-weight:950;letter-spacing:.04em}.logo span{color:var(--cyan)}.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--muted);font-size:.85rem}
+.hero{padding:28px 0 18px}.hero p{color:var(--muted);max-width:650px;line-height:1.6}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}.card{background:linear-gradient(160deg,#20264f,#171b38);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 14px 40px #05071a55}.card h2{margin-top:0}.label{display:block;font-size:.9rem;color:var(--muted);margin:12px 0 6px}input{width:100%;background:#0e1230;border:1px solid var(--line);border-radius:12px;padding:13px;color:var(--text);font:inherit}button{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:800;cursor:pointer;background:var(--cyan);color:#10132b}button.secondary{background:#30375f;color:var(--text);border:1px solid var(--line)}button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.notice{color:var(--muted);font-size:.9rem;line-height:1.55}.hidden{display:none!important}.room-code{font-size:2rem;letter-spacing:.18em;color:var(--yellow);font-weight:900}.players{display:flex;gap:8px;flex-wrap:wrap;padding:0;list-style:none}.players li{background:#2b315d;border:1px solid var(--line);padding:9px 12px;border-radius:12px}.status{color:var(--cyan);font-weight:700}.task{padding:12px;border:1px solid var(--line);border-radius:12px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}.foot{margin-top:22px;color:var(--muted);font-size:.82rem}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><div class="logo">COSMIC <span>CHAOS</span> 🚀</div><div class="pill">LOCAL STARTER · BUILD 0.1</div></div>
+  <section class="hero"><h1>Siapa yang menyabotase stasiun?</h1><p>Bangun kru, jalankan misi, dan cari penyusup sebelum sistem stasiun kacau. Ini adalah starter antarmuka untuk menyiapkan proyek. Room di versi ini hanya berjalan di browser ini, belum tersinkronisasi dengan perangkat teman.</p></section>
+  <section id="home" class="grid">
+    <div class="card"><h2>🌌 Buat room</h2><label class="label" for="hostName">Nama kamu</label><input id="hostName" maxlength="18" placeholder="Contoh: Nova" value="Captain Nova"><div class="actions"><button id="createBtn">Create Room</button></div></div>
+    <div class="card"><h2>🛰️ Gabung room</h2><label class="label" for="joinName">Nama kamu</label><input id="joinName" maxlength="18" placeholder="Nama pemain"><label class="label" for="joinCode">Kode room</label><input id="joinCode" maxlength="6" placeholder="STAR42"><div class="actions"><button id="joinBtn" class="secondary">Join Room Demo</button></div><p class="notice">Mode demo: tombol join hanya menampilkan alur lokal. Multiplayer sungguhan akan ditambahkan setelah backend tersambung.</p></div>
+  </section>
+  <section id="lobby" class="card hidden">
+    <div class="top"><h2>🪐 Space Lobby</h2><div><span class="label">Kode room</span><div id="roomCode" class="room-code">------</div></div></div>
+    <p id="lobbyMessage" class="notice">Undang kru kamu dengan kode room.</p><h3>Kru di room <span id="playerCount">1</span>/10</h3><ul id="playerList" class="players"></ul>
+    <div class="actions"><button id="addBot" class="secondary">+ Tambah pemain demo</button><button id="startBtn">Mulai ronde</button><button id="backBtn" class="secondary">Kembali</button></div>
+  </section>
+  <section id="game" class="card hidden">
+    <div class="top"><h2 id="phaseTitle">🔐 Peran Rahasia</h2><div class="pill" id="phaseBadge">FASE 1</div></div>
+    <p id="phaseText">Lihat peranmu. Jangan beritahu pemain lain.</p><div id="roleBox" class="card"><h2 id="roleTitle">👩‍🚀 Kru</h2><p id="roleDesc">Selesaikan misi dan cari penyusup.</p></div>
+    <div id="missions" class="hidden"><h3>Mini-misi</h3><div class="task"><span>🔋 Kalibrasi reaktor</span><button data-task="0">Selesaikan</button></div><div class="task"><span>🧪 Periksa oksigen</span><button data-task="1">Selesaikan</button></div><div class="task"><span>🛰️ Sinkronkan antena</span><button data-task="2">Selesaikan</button></div><p class="notice">Misi di versi starter ini hanya simulasi lokal.</p></div>
+    <div id="meeting" class="hidden"><h3>📣 Emergency meeting</h3><p>Siapa yang kamu curigai? Pilih pemain untuk simulasi voting.</p><div id="voteOptions"></div><p id="voteResult" class="status"></p></div>
+    <div class="actions"><button id="nextBtn">Lanjutkan</button><button id="meetingBtn" class="secondary">Panggil rapat</button><button id="resetBtn" class="secondary">Reset demo</button></div>
+  </section>
+  <p class="foot">COSMIC CHAOS · Starter project. Jangan gunakan demo lokal ini untuk mengklaim multiplayer real-time. Backend, validasi server, dan hosting belum dipasang.</p>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const state = { players: [], code: "", phase: 0, tasks: new Set(), votes: {}, roleIndex: 0 };
+  const phases = [
+    {title:"🔐 Peran Rahasia", text:"Periksa peranmu secara privat. Dalam versi multiplayer, server akan membagikan peran hanya kepada pemiliknya."},
+    {title:"🛠️ Fase Misi", text:"Selesaikan mini-misi. Kru berusaha menuntaskan target, sementara penyusup berusaha mengacaukan sistem."},
+    {title:"📣 Diskusi", text:"Diskusikan kecurigaan selama 45 detik. Timer server akan ditambahkan di versi online."},
+    {title:"🗳️ Voting", text:"Pilih tersangka atau lewati voting. Hasil seri tidak mengeliminasi siapa pun."},
+    {title:"🏆 Hasil Demo", text:"Ronde simulasi selesai. Kondisi kemenangan belum diverifikasi oleh server."}
+  ];
+  const show = id => $(id).classList.remove("hidden");
+  const hide = id => $(id).classList.add("hidden");
+  const code = () => Math.random().toString(36).slice(2,8).toUpperCase();
+  function renderPlayers(){
+    $("playerCount").textContent = state.players.length;
+    $("playerList").innerHTML = "";
+    state.players.forEach(p => { const li=document.createElement("li"); li.textContent=p.name+(p.host?" 👑":""); $("playerList").appendChild(li); });
+  }
+  function enterRoom(name, roomCode){
+    if(!name.trim()) { alert("Masukkan nama pemain dulu."); return; }
+    state.code=roomCode; state.players=[{name:name.trim(),host:true}]; state.phase=0; state.tasks.clear(); state.votes={};
+    $("roomCode").textContent=state.code; $("lobbyMessage").textContent="Room demo dibuat di browser ini. Belum terlihat oleh perangkat lain.";
+    hide("home"); hide("game"); show("lobby"); renderPlayers();
+  }
+  $("createBtn").addEventListener("click",()=>enterRoom($("hostName").value,code()));
+  $("joinBtn").addEventListener("click",()=>{
+    const name=$("joinName").value.trim(), c=$("joinCode").value.trim().toUpperCase();
+    if(!name||!c){alert("Masukkan nama dan kode room.");return;}
+    alert("Kode diterima untuk demo, tetapi belum ada server online untuk menemukan room dari perangkat lain. Kita akan sambungkan backend pada tahap berikutnya.");
+  });
+  $("addBot").addEventListener("click",()=>{
+    if(state.players.length>=10)return alert("Maksimal 10 pemain.");
+    const names=["Comet","Pixel","Orbit","Luna","Astro","Ziggy","Nova","Echo","Cosmo"];
+    const used=new Set(state.players.map(p=>p.name));
+    const name=names.find(n=>!used.has(n))||("Crew"+(state.players.length+1));
+    state.players.push({name,host:false});renderPlayers();
+  });
+  $("backBtn").addEventListener("click",()=>{show("home");hide("lobby");});
+  $("startBtn").addEventListener("click",()=>{
+    if(state.players.length<4)return alert("Tambahkan sampai minimal 4 pemain untuk mulai demo.");
+    state.roleIndex=Math.floor(Math.random()*state.players.length);
+    state.phase=0;hide("lobby");show("game");renderPhase();
+  });
+  function renderPhase(){
+    const p=phases[state.phase];$("phaseTitle").textContent=p.title;$("phaseBadge").textContent=`FASE ${state.phase+1} / ${phases.length}`;$("phaseText").textContent=p.text;
+    hide("missions");hide("meeting");show("roleBox");$("nextBtn").textContent=state.phase===phases.length-1?"Main lagi":"Lanjutkan";
+    if(state.phase===0){
+      const isImp=state.roleIndex===0;
+      $("roleTitle").textContent=isImp?"🛸 PENYUSUP":"👩‍🚀 KRU";
+      $("roleDesc").textContent=isImp?"Sabotase secara rahasia dan jangan sampai tertangkap. (Peran demo)":"Selesaikan misi bersama dan cari penyusup. (Peran demo)";
+    } else if(state.phase===1){show("missions");}
+    else if(state.phase===3){show("meeting");renderVotes();}
+    else if(state.phase===4){$("roleDesc").textContent="Ini hasil simulasi lokal, bukan hasil pertandingan server.";}
+  }
+  document.querySelectorAll("[data-task]").forEach(btn=>btn.addEventListener("click",()=>{
+    state.tasks.add(btn.dataset.task);btn.textContent="Selesai ✓";btn.disabled=true;
+    if(state.tasks.size===3)alert("Semua misi demo selesai!");
+  }));
+  function renderVotes(){
+    $("voteOptions").innerHTML="";
+    state.players.forEach((p,i)=>{
+      const b=document.createElement("button");b.className="secondary";b.style.margin="4px";b.textContent=p.name;
+      b.addEventListener("click",()=>{state.votes[p.name]=(state.votes[p.name]||0)+1;$("voteResult").textContent="Pilihan demo tercatat: "+p.name;});
+      $("voteOptions").appendChild(b);
+    });
+    const skip=document.createElement("button");skip.className="secondary";skip.style.margin="4px";skip.textContent="Skip";
+    skip.addEventListener("click",()=>{$("voteResult").textContent="Voting dilewati (demo).";});$("voteOptions").appendChild(skip);
+  }
+  $("nextBtn").addEventListener("click",()=>{
+    if(state.phase>=phases.length-1){hide("game");show("lobby");state.phase=0;return;}
+    state.phase++;renderPhase();
+  });
+  $("meetingBtn").addEventListener("click",()=>{state.phase=3;renderPhase();});
+  $("resetBtn").addEventListener("click",()=>{hide("game");show("home");state.players=[];state.tasks.clear();});
+})();
+</script>
+</body>
+</html>
